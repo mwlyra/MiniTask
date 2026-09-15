@@ -1,0 +1,6 @@
+Windows: Microsoft Windows NT 10.0.26200.0; x64=True; runtime=10.0.12
+PASS x64 Win32 INPUT and hook layouts
+PASS Hotkey conflict detection and registration recovery
+PASS Keyboard capture pipeline: controls, repeat, injected exclusion and own UI
+UNAVAILABLE: Windows refused foreground activation. Live injection checks were not run. Launch this harness from a foreground terminal for desktop acceptance.
+WINDOWS RESULT: 3 passed, 0 failed, 6 unavailable

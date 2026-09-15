@@ -1,0 +1,3 @@
+Compact window: 284 × 117 device-independent pixels.
+PASS compact toolbar; speed/repeat/caption menu actions and persistence; advanced dialog; recording/playback Stop states; light/dark rendering at 100%, 150%, 200%.
+UI images: C:\Users\mauri\.codex\.chatgpt-projects\g-p-6aa8233ee2a881919e88b65dbf6c0f67\MiniTask\artifacts\ui-checks

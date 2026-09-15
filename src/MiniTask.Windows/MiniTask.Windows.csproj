@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net10.0-windows</TargetFramework></PropertyGroup>
+  <ItemGroup><ProjectReference Include="../MiniTask.Core/MiniTask.Core.csproj" /></ItemGroup>
+</Project>

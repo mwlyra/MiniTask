@@ -1,0 +1,23 @@
+PASS Absolute scheduling, ordering, repeated key down, hold and trailing delay
+PASS Speed calculations at all presets and validated custom speed
+PASS Countdown precedes events and does not consume macro duration
+PASS Cancellation releases owned key and mouse button in reverse order
+PASS Physical hold collision aborts without injecting or releasing it
+PASS Physical press during playback is not released by cleanup
+PASS Failed injection stops, cleans up and does not replay accepted down
+PASS Cleanup failure is reported
+PASS Environment failure during a pause releases owned inputs
+PASS Continuous playback cancels between complete cycles
+PASS Real cancellation during a 1-hour wait (20 trials)
+PASS Recording preserves order, repeat and intentional trailing delay
+PASS Recording ignores orphan releases and seals held input on stop
+PASS Bounded queue overload stops visibly and preserves valid captured prefix
+PASS Invalid versions, ordering, durations, enums and unmatched states rejected
+PASS Duplicate button down rejected, repeated key down accepted
+PASS Save/load round trip and atomic replacement
+PASS Oversized file/event list and malicious JSON rejected
+PASS Negative desktop coordinates, normalization edges and window anchoring
+PASS Required format header and streaming event-count bound
+PASS State transitions exclude overlapping/rapid runs
+RESULT: 21 passed, 0 failed
+Cancellation detection, 20 real-clock trials: max 0.897 ms; average 0.105 ms. Not a hard real-time guarantee.

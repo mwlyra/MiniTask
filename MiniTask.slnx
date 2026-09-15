@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MiniTask.Core/MiniTask.Core.csproj" />
+    <Project Path="src/MiniTask.Windows/MiniTask.Windows.csproj" />
+    <Project Path="src/MiniTask.Desktop/MiniTask.Desktop.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MiniTask.Core.Tests/MiniTask.Core.Tests.csproj" />
+    <Project Path="tests/MiniTask.Windows.Tests/MiniTask.Windows.Tests.csproj" />
+    <Project Path="tests/MiniTask.Ui.Tests/MiniTask.Ui.Tests.csproj" />
+  </Folder>
+</Solution>
