@@ -1,2 +1,0 @@
-PASS self-contained MiniTask.exe starts and closes through normal WPF shutdown without a separately installed .NET 10 runtime.
-Idle sample: 121.049.088 working-set bytes; 65.662.976 private bytes; 78,125 ms CPU during 3009,417 ms wall time (2,596% of one logical CPU).

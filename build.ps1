@@ -19,9 +19,7 @@ try {
     if ($Publish) {
         & $DotNet publish src/MiniTask.Desktop -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true --configfile NuGet.Config -o artifacts/portable
         if ($LASTEXITCODE) { throw 'Publish failed.' }
-        Copy-Item -LiteralPath README.md -Destination artifacts/portable/README.md -Force
-        Copy-Item -Path docs -Destination artifacts/portable -Recurse -Force
-        Compress-Archive -Path artifacts/portable/MiniTask.exe, artifacts/portable/README.md, artifacts/portable/docs -DestinationPath artifacts/MiniTask-win-x64.zip -Force
+        Compress-Archive -Path artifacts/portable/MiniTask.exe, README.md, docs -DestinationPath artifacts/MiniTask-win-x64.zip -Force
         Add-Type -AssemblyName System.IO.Compression.FileSystem
         $sourceZipPath = Join-Path $PSScriptRoot 'artifacts/MiniTask-source.zip'
         $sourceStream = [System.IO.File]::Open($sourceZipPath, [System.IO.FileMode]::Create)

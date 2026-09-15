@@ -6,7 +6,7 @@
 2. Press **F8**, or click **Rec**. The toolbar says **Recording** and shows elapsed time. On first use, read the reminder that saved macros may contain sensitive input.
 3. Perform mouse and keyboard actions normally. Pauses, repeated held keys, dragging, extra mouse buttons and wheel input are captured.
 4. Press **F8** again, click **Stop**, or press **F10**. The delay between the last action and Stop is preserved. Any recorded input still held at Stop is given a matching release at the end.
-5. Prepare the target, then press **F9** or click **Play**. A fresh 1.1 installation plays immediately; choose **Prefs → Start delay** for a countdown. Existing preferences and loaded macros retain their saved delay. Do not use the mouse or keyboard during playback.
+5. Prepare the target, then press **F9** or click **Play**. Playback starts immediately by default; choose **Prefs → Start delay** for a countdown. Loaded recordings retain their saved delay. Do not use the mouse or keyboard during playback.
 6. Press **F9**, **F10**, or click **Stop** to interrupt. **F10 works through the physical keyboard hook even while a macro modifier is held.** The visible Stop and tray emergency action are also available.
 
 The reserved control keys are excluded on both press and release and are not delivered to target applications. They remain reserved with modifiers held. If your target uses F8/F9/F10, choose different function keys under **Prefs → Hotkeys**. Registration failures are shown visibly; resolve them before relying on global shortcuts.

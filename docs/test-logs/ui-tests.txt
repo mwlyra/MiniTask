@@ -1,2 +1,0 @@
-PASS WPF toolbar and settings instantiate; five named actions; light/dark render at 100%, 150%, 200%.
-UI images: C:\Users\mauri\.codex\.chatgpt-projects\g-p-6aa8233ee2a881919e88b65dbf6c0f67\MiniTask\artifacts\ui-checks

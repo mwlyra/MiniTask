@@ -64,8 +64,8 @@ internal static class Program
                 new Hotkeys(0x70, 0x71, 0x72).Validate();
                 try { controller.Input.Configure(new(0x7B, 0x86, 0x87)).GetAwaiter().GetResult(); throw new Exception("Reserved F12 was accepted."); }
                 catch (InvalidDataException) { }
-                VerifyBrand(window, root, output);
-                Console.WriteLine("PASS standard-key shortcut menus, duplicate assignment prevention, F1–F3 validation, reserved F12 rejection, embedded and tray branding.");
+                VerifyIcon(window, root);
+                Console.WriteLine("PASS standard-key shortcut menus, duplicate assignment prevention, F1–F3 validation, reserved F12 rejection, embedded and tray icons.");
                 var speedMenu = commands.Items.OfType<MenuItem>().Single(m => (string)m.Header == "Playback speed");
                 speedMenu.Items.OfType<MenuItem>().Single(m => (string)m.Header == "2×").RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
                 if (savedPreferences?.Playback.Speed != 2) throw new Exception("Speed menu did not save the chosen value.");
@@ -117,7 +117,7 @@ internal static class Program
         };
         timer.Start(); app.Run(window); return failed == 0 ? 0 : 1;
     }
-    private static void VerifyBrand(MainWindow window, string root, string output)
+    private static void VerifyIcon(MainWindow window, string root)
     {
         var decoder = new IconBitmapDecoder(new Uri("pack://application:,,,/MiniTask;component/MiniTask.ico"), BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
         int[] expected = [16, 20, 24, 32, 40, 48, 64, 128, 256];
@@ -141,26 +141,6 @@ internal static class Program
             rgba.CopyPixels(pixels, frame.PixelWidth * 4, 0);
             if (pixels[3] != 0) throw new Exception("Icon corners must remain transparent.");
         }
-        var preview = new StackPanel { Width = 640 };
-        foreach (bool dark in new[] { false, true })
-        {
-            var panel = new StackPanel { Background = dark ? new SolidColorBrush(Color.FromRgb(41, 41, 40)) : new SolidColorBrush(Color.FromRgb(240, 240, 236)) };
-            var title = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(24, 20, 24, 12) };
-            title.Children.Add(new Image { Source = decoder.Frames.Last(), Width = 80, Height = 80 });
-            title.Children.Add(new TextBlock { Text = "MiniTask", FontSize = 34, FontWeight = FontWeights.SemiBold, Foreground = dark ? Brushes.WhiteSmoke : Brushes.Black, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(20, 0, 0, 0) });
-            panel.Children.Add(title);
-            var row = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(24, 0, 24, 20) };
-            foreach (var frame in decoder.Frames.Where(f => f.PixelWidth <= 64))
-            {
-                var cell = new StackPanel { Width = 80 };
-                cell.Children.Add(new Image { Source = frame, Width = frame.PixelWidth, Height = frame.PixelHeight, VerticalAlignment = VerticalAlignment.Bottom });
-                cell.Children.Add(new TextBlock { Text = $"{frame.PixelWidth} px", FontSize = 11, Foreground = dark ? Brushes.WhiteSmoke : Brushes.Black, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 8, 0, 0) });
-                row.Children.Add(cell);
-            }
-            panel.Children.Add(row); preview.Children.Add(panel);
-        }
-        preview.Measure(new Size(640, double.PositiveInfinity)); preview.Arrange(new Rect(preview.DesiredSize));
-        RenderElement(preview, Brushes.Transparent, Path.Combine(output, "brand-preview.png"), 1);
     }
     private static void Render(Window window, string path, double scale)
     {
