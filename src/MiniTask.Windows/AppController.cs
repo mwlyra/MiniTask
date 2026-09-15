@@ -19,6 +19,8 @@ public sealed class AppController : IAsyncDisposable
     public event Action? RecordRequested;
     public event Action? PlayRequested;
     public event Action<Macro>? Recorded;
+    public event Action? RunStarted;
+    public event Action? RunFinished;
     public event Action<string>? Failed;
     public event Action<Exception>? TechnicalFailure;
     public AppController()
@@ -46,9 +48,11 @@ public sealed class AppController : IAsyncDisposable
     private async Task Record(RecordingSession session, Task begin)
     {
         bool failed = false;
+        bool started = false;
         try
         {
             await begin.ConfigureAwait(false);
+            started = true; RunStarted?.Invoke();
             var result = await session.Completion.ConfigureAwait(false);
             Macro = result;
             Recorded?.Invoke(result);
@@ -59,6 +63,7 @@ public sealed class AppController : IAsyncDisposable
         {
             await Input.End().ConfigureAwait(false);
             lock (sync) { recording = null; Status = stopReason ?? (failed ? Status : "Ready · recording captured"); Gate.Finish(failed); }
+            if (started) RunFinished?.Invoke();
         }
     }
     public bool Play(PlaybackOptions options, nint target)
@@ -74,6 +79,7 @@ public sealed class AppController : IAsyncDisposable
             active = Task.Run(async () =>
             {
                 bool failed = false;
+                bool started = false;
                 try
                 {
                     // Capture active target after countdown, so focus protection does not anchor to the toolbar.
@@ -82,6 +88,7 @@ public sealed class AppController : IAsyncDisposable
                     {
                         Progress = p;
                         if (p.CountdownRemaining == 0) Gate.Playing();
+                        if (p.CountdownRemaining == 0 && !started) { started = true; RunStarted?.Invoke(); }
                         Status = p.CountdownRemaining > 0 ? $"Starts in {p.CountdownRemaining}…" : $"Playing · repetition {p.Repetition}{(options.Continuous ? " · continuous" : $" of {options.Repetitions}")}";
                     }, token).ConfigureAwait(false);
                 }
@@ -95,6 +102,7 @@ public sealed class AppController : IAsyncDisposable
                         Status = stopReason ?? (failed ? Status : token.IsCancellationRequested ? "Stopped" : "Ready · playback finished");
                         Gate.Finish(failed);
                     }
+                    if (started) RunFinished?.Invoke();
                 }
             });
             return true;

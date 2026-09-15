@@ -17,7 +17,7 @@ Screen-position playback attempts to activate the most recently active external 
 
 ## Save, reopen and clear
 
-Click **Save** to write a readable `.minitask` JSON file. The title and status show unsaved changes. Open, recording replacement, clearing and closing prompt before discarding them. Save again after changing playback preferences to include them in the file.
+Click **Save** to write a readable `.minitask` JSON file. The title and status show unsaved changes. Starting another recording with **F8** or **Rec** replaces the previous recording without asking to save it. Click **Save** first to keep it. Opening another file, clearing, and closing still ask before discarding unsaved changes. Save again after changing playback preferences to include them in the file.
 
 Click **Open** (Ctrl+O) to load a file and **Save** (Ctrl+S) to save. **Right-click Open**, or use **Prefs → Recent recordings**, for recent files. Loading never starts playback. Use **Prefs → Clear recording** to empty the current macro.
 
@@ -42,6 +42,8 @@ Each cycle includes the original trailing pause scaled by playback speed. The ga
 **Relative to a window** applies to new recordings. Select a visible target before recording. Mouse coordinates are stored relative to its client origin and anchored to that origin during playback. MiniTask matches process name, window class and exact title; requires exactly one match; and checks the client dimensions and DPI. It does not persist or trust a saved window handle. A moved window is supported within the recorded desktop, but renamed, resized, minimized or ambiguous targets are rejected. Targets with frequently changing titles may need a new recording. This mode still sends ordinary foreground input and can include positions outside the client area.
 
 ## Appearance, tray and privileges
+
+Enable **Prefs → Sound cues** for a short rising tone when recording or playback starts and a falling tone when it finishes or is stopped. Switching the option on previews the start tone. Sounds are off by default and use your normal Windows audio output. Playback's start tone follows any start delay; repeats do not play additional tones.
 
 Use **Prefs → Appearance** for Light, Dark or System; **Always on top** to pin the toolbar; and **Show button captions** for an icons-only bar. Hover over an icon to see its action and shortcut. Classic native menus and selection fields remain light in either toolbar theme. The status line shows elapsed time or repetition/progress while active, with the emergency shortcut at the right. Error text can be clicked for details.
 

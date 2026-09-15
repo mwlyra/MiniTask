@@ -9,6 +9,7 @@ public sealed record Settings
     public CoordinateMode CoordinateMode { get; init; }
     public string Theme { get; init; } = "Light";
     public bool ShowCaptions { get; init; } = true;
+    public bool SoundCues { get; init; }
     public bool AlwaysOnTop { get; init; }
     public bool TrayOnMinimize { get; init; } = true;
     public bool PrivacyAccepted { get; init; }

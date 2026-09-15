@@ -66,6 +66,7 @@ public sealed partial class MainWindow
             keys.Items.Add(group);
         }
         menu.Items.Add(keys);
+        menu.Items.Add(Item("Sound cues", () => { settings = settings with { SoundCues = !settings.SoundCues }; PersistSettings(); if (settings.SoundCues) PlaySound(true); }, settings.SoundCues));
         menu.Items.Add(Item("Always on top", () => { settings = settings with { AlwaysOnTop = !settings.AlwaysOnTop }; Topmost = settings.AlwaysOnTop; PersistSettings(); }, settings.AlwaysOnTop));
         menu.Items.Add(Item("Show button captions", () => { settings = settings with { ShowCaptions = !settings.ShowCaptions }; PersistSettings(); Refresh(); }, settings.ShowCaptions));
         var theme = Item("Appearance");

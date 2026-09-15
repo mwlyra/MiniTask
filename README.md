@@ -6,7 +6,7 @@ A small Windows app that records your mouse and keyboard actions so you can play
 
 ## Download and setup
 
-1. [Download MiniTask for Windows](https://github.com/mwlyra/MiniTask/releases/download/v1.1.2/MiniTask-1.1.2-win-x64.zip).
+1. [Download MiniTask for Windows](https://github.com/mwlyra/MiniTask/releases/download/v1.1.3/MiniTask-1.1.3-win-x64.zip).
 2. Right-click the ZIP file and choose **Extract All**.
 3. Open the extracted folder and run **MiniTask.exe**.
 
@@ -37,7 +37,11 @@ Keep windows in the same position for playback and leave the mouse and keyboard 
 
 **Save** keeps a recording as a `.minitask` file. **Open** loads one without starting playback.
 
+F8 starts a fresh recording without asking to save the previous one. Click **Save** first if you want to keep it.
+
 Use **Prefs** to change playback speed, repeat count, start delay, shortcuts, or appearance. Choose **Continuous playback** to repeat until stopped. **Always on top** keeps the toolbar within reach.
+
+For a short tone when recording or playback starts and stops, enable **Prefs → Sound cues**. Sounds are off by default; switching them on plays a preview.
 
 ## Need help?
 

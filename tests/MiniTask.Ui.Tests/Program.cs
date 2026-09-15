@@ -26,13 +26,14 @@ internal static class Program
         var dictionary = new XElement(ns + "ResourceDictionary", new XAttribute(XNamespace.Xmlns + "x", "http://schemas.microsoft.com/winfx/2006/xaml"), xaml.Root!.Element(ns + "Application.Resources")!.Elements());
         var app = new Application { Resources = (ResourceDictionary)XamlReader.Parse(dictionary.ToString()) };
         Settings? savedPreferences = null;
-        var window = new MainWindow(null, value => savedPreferences = value); app.MainWindow = window;
+        var sounds = new System.Collections.Generic.List<bool>();
+        var window = new MainWindow(null, value => savedPreferences = value, starting => sounds.Add(starting)); app.MainWindow = window;
         // Use separate controls so an already-running user instance keeps its shortcuts/settings.
         var settingsField = typeof(MainWindow).GetField("settings", BindingFlags.NonPublic | BindingFlags.Instance)!;
         settingsField.SetValue(window, new Settings { Hotkeys = new(0x85, 0x86, 0x87) });
         int failed = 0;
         var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-        timer.Tick += (_, _) =>
+        timer.Tick += async (_, _) =>
         {
             timer.Stop();
             try
@@ -65,6 +66,34 @@ internal static class Program
                 try { controller.Input.Configure(new(0x7B, 0x86, 0x87)).GetAwaiter().GetResult(); throw new Exception("Reserved F12 was accepted."); }
                 catch (InvalidDataException) { }
                 VerifyIcon(window, root);
+                var soundMenu = commands.Items.OfType<MenuItem>().Single(m => (string)m.Header == "Sound cues");
+                soundMenu.RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
+                if (savedPreferences?.SoundCues != true || !sounds.SequenceEqual(new[] { true })) throw new Exception("Enabling sound cues must persist and preview the start cue.");
+                soundMenu.RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
+                if (savedPreferences?.SoundCues != false || sounds.Count != 1) throw new Exception("Disabling sound cues must be silent and persist.");
+                sounds.Clear();
+                var dirtyField = typeof(MainWindow).GetField("dirty", BindingFlags.NonPublic | BindingFlags.Instance)!;
+                var filenameField = typeof(MainWindow).GetField("filename", BindingFlags.NonPublic | BindingFlags.Instance)!;
+                var previous = new MiniTask.Core.Macro { Name = "Previous recording" };
+                controller.Macro = previous; dirtyField.SetValue(window, true); filenameField.SetValue(window, "previous.minitask");
+                settingsField.SetValue(window, new Settings { Hotkeys = new(0x85, 0x86, 0x87), PrivacyAccepted = true, SoundCues = true });
+                ((Button)toolbar.Children[2]).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                if (controller.Gate.State != MiniTask.Core.RunState.Recording) throw new Exception("An unsaved macro must not block starting another recording.");
+                controller.Stop(); await controller.WaitForStop(); await Dispatcher.Yield(DispatcherPriority.Background);
+                if (!sounds.SequenceEqual(new[] { true, false })) throw new Exception("Recording must emit one start cue and one completion cue.");
+                if (ReferenceEquals(controller.Macro, previous) || filenameField.GetValue(window) is not null || !(bool)dirtyField.GetValue(window)!)
+                    throw new Exception("A fresh recording must replace the old one without reusing its saved filename.");
+                controller.Macro = null; dirtyField.SetValue(window, false); sounds.Clear();
+                settingsField.SetValue(window, new Settings());
+                var soundType = typeof(MainWindow).Assembly.GetType("MiniTask.Desktop.SoundCues")!;
+                var wave = soundType.GetMethod("Wave", BindingFlags.Static | BindingFlags.NonPublic)!;
+                foreach (var cue in new[] { ("start", 880d), ("stop", 440d) })
+                {
+                    byte[] bytes = (byte[])wave.Invoke(null, new object[] { 660d, cue.Item2 })!;
+                    using var audio = new System.Media.SoundPlayer(new MemoryStream(bytes)); audio.Load();
+                    File.WriteAllBytes(Path.Combine(output, cue.Item1 + ".wav"), bytes);
+                }
+                Console.WriteLine("PASS replacing an unsaved recording without a save prompt; optional sound preference and preview; ordered recording cues; valid WAV audio.");
                 Console.WriteLine("PASS standard-key shortcut menus, duplicate assignment prevention, F1–F3 validation, reserved F12 rejection, embedded and tray icons.");
                 var speedMenu = commands.Items.OfType<MenuItem>().Single(m => (string)m.Header == "Playback speed");
                 speedMenu.Items.OfType<MenuItem>().Single(m => (string)m.Header == "2×").RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));

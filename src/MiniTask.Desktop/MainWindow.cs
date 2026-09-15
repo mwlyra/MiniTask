@@ -10,6 +10,7 @@ public sealed partial class MainWindow : Window
 {
     private readonly AppController controller = new();
     private readonly Action<Settings> savePreferences;
+    private readonly Action<bool> playSound;
     private Settings settings;
     private readonly Button open, save, record, play, options;
     private readonly TextBlock status = new() { FontSize = 11, TextTrimming = TextTrimming.CharacterEllipsis, VerticalAlignment = VerticalAlignment.Center };
@@ -21,9 +22,10 @@ public sealed partial class MainWindow : Window
     private string? filename;
     private string? warning;
     private string? uiError;
-    public MainWindow(string? initialFile, Action<Settings>? savePreferences = null)
+    public MainWindow(string? initialFile, Action<Settings>? savePreferences = null, Action<bool>? playSound = null)
     {
         this.savePreferences = savePreferences ?? (value => value.Save());
+        this.playSound = playSound ?? SoundCues.Play;
         settings = Settings.Load(out warning);
         Style = (Style)FindResource(typeof(Window));
         App.ApplyTheme(settings.Theme);
@@ -67,6 +69,8 @@ public sealed partial class MainWindow : Window
         controller.RecordRequested += () => Dispatcher.BeginInvoke(ToggleRecord);
         controller.PlayRequested += () => Dispatcher.BeginInvoke(TogglePlay);
         controller.Recorded += _ => Dispatcher.BeginInvoke(() => { dirty = true; filename = null; });
+        controller.RunStarted += () => Dispatcher.BeginInvoke(() => PlaySound(true));
+        controller.RunFinished += () => Dispatcher.BeginInvoke(() => PlaySound(false));
         controller.Failed += message => Dispatcher.BeginInvoke(() => { uiError = message; Restore(); });
         controller.TechnicalFailure += ex => Diagnostics.Failure("engine", ex);
         timer = new DispatcherTimer(TimeSpan.FromMilliseconds(100), DispatcherPriority.Background, (_, _) => Refresh(), Dispatcher);
@@ -161,7 +165,7 @@ public sealed partial class MainWindow : Window
         var t = TimeSpan.FromMicroseconds(us);
         return t.TotalHours >= 1 ? ((int)t.TotalHours).ToString() + t.ToString("\\:mm\\:ss") : t.ToString("mm\\:ss");
     }
-    private async void ToggleRecord()
+    private void ToggleRecord()
     {
         if (controller.Gate.State == RunState.Recording) { controller.Stop(); return; }
         if (Busy || dialogOpen) return;
@@ -169,7 +173,6 @@ public sealed partial class MainWindow : Window
         dialogOpen = true;
         try
         {
-            if (!await MayDiscard()) return;
             if (!settings.PrivacyAccepted)
             {
                 MessageBox.Show(this, "Saved recordings include what you type—even passwords. Be careful when sharing them. MiniTask keeps everything on your computer.", "MiniTask · First recording", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -286,6 +289,7 @@ public sealed partial class MainWindow : Window
         open.ContextMenu = null;
     }
     private void PersistSettings() { try { savePreferences(settings); } catch (Exception ex) { Error(ex); } }
+    private void PlaySound(bool starting) { if (settings.SoundCues && !closing) playSound(starting); }
     private void ShowSettings()
     {
         if (Busy || dialogOpen) return;
