@@ -1,6 +1,6 @@
-# MiniTask 1.1.1
+# MiniTask 1.1.2
 
-<img src="docs/images/minitask-icon.png" width="64" height="64" alt="MiniTask replay icon" />
+<img src="docs/images/minitask-icon.png" width="64" height="64" alt="MiniTask classic cassette recorder icon" />
 
 A compact, offline Windows macro recorder built with C#, .NET 10 LTS, WPF and Win32. Original source and branding; no TinyTask code or assets.
 
@@ -12,9 +12,11 @@ Version 1.1 has a classic **284 × 117** utility window: Open, Save, Rec, Play a
 
 ## Download / run
 
-Download the Windows ZIP from [GitHub releases](https://github.com/mwlyra/MiniTask/releases), extract `MiniTask-1.1.1-win-x64.zip`, and run `MiniTask.exe`. **Exit an older running MiniTask first, including its tray icon.** No installer, account, administrator rights, network connection or separately installed runtime is required. The executable is unsigned. Keep the included documentation nearby.
+Download the Windows ZIP from [GitHub releases](https://github.com/mwlyra/MiniTask/releases), extract `MiniTask-1.1.2-win-x64.zip`, and run `MiniTask.exe`. **Exit an older running MiniTask first, including its tray icon.** No installer, account, administrator rights, network connection or separately installed runtime is required. The executable is unsigned. Keep the included documentation nearby.
 
-Version 1.1.1 adds an original red replay icon throughout the app and a shorter shortcut menu for standard keyboards. Choose F1–F11; F12 is shown as reserved by Windows. Keys assigned to another action are labeled and disabled. Existing F13–F24 assignments are preserved, but these specialist keys are no longer offered in the menu. Editable SVG and PNG [branding assets](https://github.com/mwlyra/MiniTask/tree/main/assets/brand) are included in the source.
+Version 1.1.2 gives MiniTask a classic cassette recorder icon, using the toolbar's muted colors, dark outlines and small beveled highlights. Editable SVG and PNG [branding assets](https://github.com/mwlyra/MiniTask/tree/main/assets/brand) are included in the source.
+
+The shortcut menu offers F1–F11; F12 is shown as reserved by Windows. Keys assigned to another action are labeled and disabled. Existing F13–F24 assignments are preserved, but these specialist keys are no longer offered in the menu.
 
 The source and a portable build are delivered. **This is a release candidate, not a fully desktop-certified production release.** Automated engine and WPF checks pass, but physical end-to-end recording in external apps and the full live-injection suite remain unverified in this environment. See [test results](docs/TEST-RESULTS.md) before relying on unattended playback.
 

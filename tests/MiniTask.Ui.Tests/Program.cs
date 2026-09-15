@@ -126,9 +126,13 @@ internal static class Program
         var tray = (System.Windows.Forms.NotifyIcon)typeof(MainWindow).GetField("tray", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(window)!;
         if (tray.Icon is null) throw new Exception("Tray branding is missing.");
         using (var trayBitmap = tray.Icon.ToBitmap())
+        using (var expectedIcon = new System.Drawing.Icon(Path.Combine(root, "src", "MiniTask.Desktop", "MiniTask.ico"), tray.Icon.Size))
+        using (var expectedBitmap = expectedIcon.ToBitmap())
         {
-            var red = trayBitmap.GetPixel(trayBitmap.Width / 2, trayBitmap.Height / 8);
-            if (red.R <= red.G * 1.5) throw new Exception("The tray is using a host/process icon instead of MiniTask branding.");
+            for (int y = 0; y < trayBitmap.Height; y++)
+                for (int x = 0; x < trayBitmap.Width; x++)
+                    if (trayBitmap.GetPixel(x, y).ToArgb() != expectedBitmap.GetPixel(x, y).ToArgb())
+                        throw new Exception("The tray is using a host/process icon instead of MiniTask branding.");
         }
         foreach (var frame in decoder.Frames)
         {

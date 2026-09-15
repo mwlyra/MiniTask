@@ -2,7 +2,7 @@
 
 The release executable is **MiniTask.exe**, Windows x64, self-contained .NET 10.0.12 with WPF. No installer or separately installed runtime is required.
 
-Version 1.1.1 measured executable size: **173,168,698 bytes (165.1 MiB)**. This is much larger than TinyTask because it includes the managed runtime and Windows desktop framework. ZIP compression reduces download size; the precise final archive size and SHA-256 values are recorded in the accompanying `release-metrics-v1.1.1.json` and `SHA256SUMS-v1.1.1.txt`.
+Version 1.1.2 measured executable size: **173,172,794 bytes (165.2 MiB)**. This is much larger than TinyTask because it includes the managed runtime and Windows desktop framework. ZIP compression reduces download size; the precise final archive size and SHA-256 values are recorded in the accompanying `release-metrics-v1.1.2.json` and `SHA256SUMS-v1.1.2.txt`.
 
 The portable ZIP contains the executable, README, guides, format/compatibility/validation documents, and .NET license notices. Debug symbol files remain in the build directory but are not required or included in the portable ZIP. The separate source ZIP contains the complete source, icon, solution, build script, tests and documentation, excluding generated binaries, object files, runtime downloads and artifacts.
 

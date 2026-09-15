@@ -61,6 +61,10 @@ The self-contained 1.1.1 executable also launched and closed normally in input-t
 
 These tests do not replace the unexecuted physical acceptance checks above.
 
+## Version 1.1.2 icon follow-up
+
+Release build: zero warnings/errors. The WPF suite passed again with the classic cassette icon, including all nine embedded sizes, transparent corners and a pixel comparison of the tray icon with the intended source asset. Light/dark native-size previews were inspected. Existing shortcut and toolbar/menu checks passed. See `ui-tests-v1.1.2.txt` under `test-logs/`. The recording/playback engine is unchanged; the 1.1.1 engine regression results above remain the latest engine run.
+
 ## Rerun
 
 From the source folder, with a .NET 10 SDK:

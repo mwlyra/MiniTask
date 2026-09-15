@@ -1,13 +1,13 @@
 # MiniTask identity
 
-The red replay mark pairs a circular arrow with a play triangle. Warm red echoes the recorder button; ivory keeps the symbol clear on both toolbar themes. The mark works without the app name in the title bar, taskbar and system tray.
+The classic cassette recorder combines a beveled gray shell, a muted blue label, two tape reels and a red recording button. Its dark outlines and small highlights use the toolbar's existing palette and old-school Windows utility style. The silhouette sits directly on a transparent background and works without the app name in the title bar, taskbar and system tray.
 
-- `minitask.svg`: original editable vector; transparent outside the red tile.
+- `minitask.svg`: original editable vector; transparent around the cassette and recording button.
 - `minitask-1024.png`: large transparent PNG for branding and listings.
 - `minitask-256.png`: compact PNG for documentation and previews.
 - `../../src/MiniTask.Desktop/MiniTask.ico`: Windows icon with 16, 20, 24, 32, 40, 48, 64, 128 and 256 px frames.
 
-Keep the mark square, preserve its colors and surrounding transparency, and avoid stretching or adding text inside it. Use “MiniTask” beside it when the full name is needed.
+Keep the canvas square, preserve its colors and surrounding transparency, and avoid stretching or adding text inside it. Use “MiniTask” beside it when the full name is needed.
 
 To regenerate the PNG and ICO files from the SVG on Windows:
 

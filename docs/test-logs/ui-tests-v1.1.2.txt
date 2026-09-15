@@ -1,0 +1,4 @@
+Compact window: 284 × 117 device-independent pixels.
+PASS standard-key shortcut menus, duplicate assignment prevention, F1–F3 validation, reserved F12 rejection, embedded and tray branding.
+PASS compact toolbar; speed/repeat/caption menu actions and persistence; advanced dialog; recording/playback Stop states; light/dark rendering at 100%, 150%, 200%.
+UI images: artifacts/ui-checks

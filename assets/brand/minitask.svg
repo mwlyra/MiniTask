@@ -1,7 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="MiniTask">
-  <title>MiniTask — record, replay, repeat</title>
-  <path fill="#B63D32" d="M16,2 H48 A14,14 0 0 1 62,16 V48 A14,14 0 0 1 48,62 H16 A14,14 0 0 1 2,48 V16 A14,14 0 0 1 16,2 Z"/>
-  <path fill="none" stroke="#FFF6E6" stroke-width="6" stroke-linecap="round" d="M49,35 A17,17 0 1 1 41,18"/>
-  <path fill="#FFF6E6" d="M49,12 V26 H35 Z"/>
-  <path fill="#FFF6E6" d="M27,24 L40,32 27,40 Z"/>
+  <title>MiniTask — classic cassette recorder</title>
+  <path fill="#D1D1CB" stroke="#62625E" stroke-width="2" d="M8,10 H54 L58,14 V48 L54,52 H8 L4,48 V14 Z"/>
+  <path fill="none" stroke="#FAF7EF" stroke-width="2" d="M7,46 V15 L10,12 H53"/>
+  <path fill="none" stroke="#A5A5A0" stroke-width="2" d="M56,16 V47 L53,50 H10"/>
+  <path fill="#FAF7EF" stroke="#62625E" stroke-width="2" d="M10,17 H52 V36 H10 Z"/>
+  <path fill="#628BA4" d="M11,18 H51 V23 H11 Z"/>
+  <path fill="#A5A5A0" d="M18,26 H44 V32 H18 Z"/>
+  <path fill="#62625E" d="M24,29 A6,6 0 1 1 12,29 A6,6 0 1 1 24,29 Z M50,29 A6,6 0 1 1 38,29 A6,6 0 1 1 50,29 Z"/>
+  <path fill="#FAF7EF" d="M21,29 A3,3 0 1 1 15,29 A3,3 0 1 1 21,29 Z M47,29 A3,3 0 1 1 41,29 A3,3 0 1 1 47,29 Z"/>
+  <path fill="#A5A5A0" stroke="#62625E" stroke-width="2" d="M20,41 H42 L46,50 H16 Z"/>
+  <path fill="none" stroke="#FAF7EF" stroke-width="2" d="M20,48 L22,43 H39"/>
+  <path fill="#BB3D35" stroke="#87312D" stroke-width="2" d="M61,47 A11,11 0 1 1 39,47 A11,11 0 1 1 61,47 Z"/>
+  <path fill="#DF6559" d="M42,47 A8,8 0 0 1 56,42 C51,41 46,43 42,47 Z"/>
+  <path fill="none" stroke="#F5B9AD" stroke-width="2" d="M43,44 C44,40 48,38 51,39"/>
 </svg>
