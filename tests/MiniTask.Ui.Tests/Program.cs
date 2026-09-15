@@ -50,6 +50,22 @@ internal static class Program
                 var controller = (AppController)field.GetValue(window)!;
                 var buildMenu = typeof(MainWindow).GetMethod("BuildPreferencesMenu", BindingFlags.NonPublic | BindingFlags.Instance)!;
                 var commands = (ContextMenu)buildMenu.Invoke(window, null)!;
+                var hotkeyMenu = commands.Items.OfType<MenuItem>().Single(m => (string)m.Header == "Hotkeys");
+                foreach (var group in hotkeyMenu.Items.OfType<MenuItem>())
+                {
+                    var choices = group.Items.OfType<MenuItem>().ToArray();
+                    if (choices.Length != 12 || choices[0].Header.ToString() != "F1" || choices.Any(c => c.Header.ToString()!.StartsWith("F13")))
+                        throw new Exception("Hotkeys must show standard keyboard keys only.");
+                    if (choices[11].IsEnabled || !choices[11].Header.ToString()!.Contains("reserved"))
+                        throw new Exception("F12 must explain that Windows reserves it.");
+                    if (choices.Count(c => c.IsChecked) != 1 || choices.Count(c => !c.IsEnabled) != 3)
+                        throw new Exception("Shortcut menu must show the active key and prevent duplicate assignments.");
+                }
+                new Hotkeys(0x70, 0x71, 0x72).Validate();
+                try { controller.Input.Configure(new(0x7B, 0x86, 0x87)).GetAwaiter().GetResult(); throw new Exception("Reserved F12 was accepted."); }
+                catch (InvalidDataException) { }
+                VerifyBrand(window, root, output);
+                Console.WriteLine("PASS standard-key shortcut menus, duplicate assignment prevention, F1–F3 validation, reserved F12 rejection, embedded and tray branding.");
                 var speedMenu = commands.Items.OfType<MenuItem>().Single(m => (string)m.Header == "Playback speed");
                 speedMenu.Items.OfType<MenuItem>().Single(m => (string)m.Header == "2×").RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
                 if (savedPreferences?.Playback.Speed != 2) throw new Exception("Speed menu did not save the chosen value.");
@@ -87,6 +103,11 @@ internal static class Program
                 settingsField.SetValue(window, new Settings { Hotkeys = new(0x85, 0x86, 0x87), ShowCaptions = false });
                 refresh.Invoke(window, null); window.UpdateLayout(); Render(window, Path.Combine(output, "toolbar-icons-only.png"), 2);
                 settingsField.SetValue(window, new Settings { Hotkeys = new(0x85, 0x86, 0x87) }); refresh.Invoke(window, null);
+                var legacyMenu = (ContextMenu)buildMenu.Invoke(window, null)!;
+                var legacyKeys = legacyMenu.Items.OfType<MenuItem>().Single(m => (string)m.Header == "Hotkeys");
+                if (!legacyKeys.Items.OfType<MenuItem>().First().Header.ToString()!.Contains("F22") ||
+                    ((Settings)settingsField.GetValue(window)!).Hotkeys.Record != 0x85)
+                    throw new Exception("An existing extended-key binding was silently changed.");
                 var input = new InputTestWindow(); input.Show(); input.UpdateLayout(); Render(input, Path.Combine(output, "input-test-dark.png"), 1); input.Close();
                 Console.WriteLine("PASS compact toolbar; speed/repeat/caption menu actions and persistence; advanced dialog; recording/playback Stop states; light/dark rendering at 100%, 150%, 200%.");
                 Console.WriteLine("UI images: " + output);
@@ -95,6 +116,47 @@ internal static class Program
             finally { window.Close(); }
         };
         timer.Start(); app.Run(window); return failed == 0 ? 0 : 1;
+    }
+    private static void VerifyBrand(MainWindow window, string root, string output)
+    {
+        var decoder = new IconBitmapDecoder(new Uri("pack://application:,,,/MiniTask;component/MiniTask.ico"), BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+        int[] expected = [16, 20, 24, 32, 40, 48, 64, 128, 256];
+        if (!decoder.Frames.Select(f => f.PixelWidth).SequenceEqual(expected) || window.Icon is null)
+            throw new Exception("Missing Windows icon sizes or title-bar icon.");
+        var tray = (System.Windows.Forms.NotifyIcon)typeof(MainWindow).GetField("tray", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(window)!;
+        if (tray.Icon is null) throw new Exception("Tray branding is missing.");
+        using (var trayBitmap = tray.Icon.ToBitmap())
+        {
+            var red = trayBitmap.GetPixel(trayBitmap.Width / 2, trayBitmap.Height / 8);
+            if (red.R <= red.G * 1.5) throw new Exception("The tray is using a host/process icon instead of MiniTask branding.");
+        }
+        foreach (var frame in decoder.Frames)
+        {
+            var rgba = new FormatConvertedBitmap(frame, PixelFormats.Bgra32, null, 0);
+            var pixels = new byte[frame.PixelWidth * frame.PixelHeight * 4];
+            rgba.CopyPixels(pixels, frame.PixelWidth * 4, 0);
+            if (pixels[3] != 0) throw new Exception("Icon corners must remain transparent.");
+        }
+        var preview = new StackPanel { Width = 640 };
+        foreach (bool dark in new[] { false, true })
+        {
+            var panel = new StackPanel { Background = dark ? new SolidColorBrush(Color.FromRgb(41, 41, 40)) : new SolidColorBrush(Color.FromRgb(240, 240, 236)) };
+            var title = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(24, 20, 24, 12) };
+            title.Children.Add(new Image { Source = decoder.Frames.Last(), Width = 80, Height = 80 });
+            title.Children.Add(new TextBlock { Text = "MiniTask", FontSize = 34, FontWeight = FontWeights.SemiBold, Foreground = dark ? Brushes.WhiteSmoke : Brushes.Black, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(20, 0, 0, 0) });
+            panel.Children.Add(title);
+            var row = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(24, 0, 24, 20) };
+            foreach (var frame in decoder.Frames.Where(f => f.PixelWidth <= 64))
+            {
+                var cell = new StackPanel { Width = 80 };
+                cell.Children.Add(new Image { Source = frame, Width = frame.PixelWidth, Height = frame.PixelHeight, VerticalAlignment = VerticalAlignment.Bottom });
+                cell.Children.Add(new TextBlock { Text = $"{frame.PixelWidth} px", FontSize = 11, Foreground = dark ? Brushes.WhiteSmoke : Brushes.Black, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 8, 0, 0) });
+                row.Children.Add(cell);
+            }
+            panel.Children.Add(row); preview.Children.Add(panel);
+        }
+        preview.Measure(new Size(640, double.PositiveInfinity)); preview.Arrange(new Rect(preview.DesiredSize));
+        RenderElement(preview, Brushes.Transparent, Path.Combine(output, "brand-preview.png"), 1);
     }
     private static void Render(Window window, string path, double scale)
     {

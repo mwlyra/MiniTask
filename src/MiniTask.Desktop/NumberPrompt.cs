@@ -6,7 +6,7 @@ internal static class NumberPrompt
 {
     public static double? Show(Window owner, string title, string label, double value, double minimum, double maximum, bool integer = false)
     {
-        var window = new Window { Owner = owner, Title = "MiniTask · " + title, Width = 292, SizeToContent = SizeToContent.Height,
+        var window = new Window { Owner = owner, Title = "MiniTask · " + title, Icon = BrandIcon.Window, Width = 292, SizeToContent = SizeToContent.Height,
             ResizeMode = ResizeMode.NoResize, WindowStartupLocation = WindowStartupLocation.CenterOwner, ShowInTaskbar = false };
         var panel = new StackPanel { Margin = new(12) };
         panel.Children.Add(new TextBlock { Text = label, Margin = new(0, 0, 0, 5) });

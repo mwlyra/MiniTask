@@ -10,7 +10,7 @@ public sealed class InputTestWindow : Window
     public InputTestWindow()
     {
         Style = (Style)FindResource(typeof(Window));
-        Title = "MiniTask · Input test"; Width = 640; Height = 520;
+        Title = "MiniTask · Input test"; Icon = BrandIcon.Window; Width = 640; Height = 520;
         var root = new StackPanel { Margin = new(16) };
         root.Children.Add(new TextBlock { Text = "Local input test", FontSize = 20, FontWeight = FontWeights.SemiBold });
         root.Children.Add(new TextBlock { Text = "Type below, scroll, or drag the square. This window shows received input only; its contents are not saved.", TextWrapping = TextWrapping.Wrap, Margin = new(0, 8, 0, 8) });

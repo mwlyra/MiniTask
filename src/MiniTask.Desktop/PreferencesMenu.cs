@@ -39,13 +39,29 @@ public sealed partial class MainWindow
         menu.Items.Add(countdown);
         menu.Items.Add(new Separator());
         var keys = Item("Hotkeys");
-        foreach (var binding in new[] { ("Record", 1, settings.Hotkeys.Record), ("Play", 2, settings.Hotkeys.Play), ("Emergency stop", 3, settings.Hotkeys.Emergency) })
+        var bindings = new[] { ("Record", 1, settings.Hotkeys.Record), ("Play", 2, settings.Hotkeys.Play), ("Emergency stop", 3, settings.Hotkeys.Emergency) };
+        foreach (var binding in bindings)
         {
             var group = Item($"{binding.Item1} ({Hotkeys.Label(binding.Item3)})");
-            foreach (int key in Enumerable.Range(0x75, 19))
+            foreach (int key in Enumerable.Range(0x70, 12))
             {
                 int value = key;
-                group.Items.Add(Item(Hotkeys.Label(value), async () => await SetHotkey(binding.Item2, value), binding.Item3 == value));
+                var choice = Item(Hotkeys.Label(value), async () => await SetHotkey(binding.Item2, value), binding.Item3 == value);
+                var assigned = bindings.FirstOrDefault(b => b.Item2 != binding.Item2 && b.Item3 == value);
+                if (value == 0x7B)
+                {
+                    choice.Header = "F12 (reserved by Windows)";
+                    choice.ToolTip = "Windows reserves F12 for debugging. Choose another key.";
+                    choice.IsEnabled = false;
+                }
+                else if (assigned.Item1 is not null)
+                {
+                    choice.Header = $"{Hotkeys.Label(value)} ({assigned.Item1})";
+                    choice.ToolTip = $"Already used for {assigned.Item1.ToLowerInvariant()}. Choose a different key.";
+                    choice.IsEnabled = false;
+                }
+                ToolTipService.SetShowOnDisabled(choice, true);
+                group.Items.Add(choice);
             }
             keys.Items.Add(group);
         }

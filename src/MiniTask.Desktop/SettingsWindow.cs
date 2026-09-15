@@ -6,7 +6,7 @@ public sealed class SettingsWindow : Window
     public SettingsWindow(Settings current)
     {
         Result = current; Style = (Style)FindResource(typeof(Window));
-        Title = "MiniTask · Advanced"; Width = 358; SizeToContent = SizeToContent.Height;
+        Title = "MiniTask · Advanced"; Icon = BrandIcon.Window; Width = 358; SizeToContent = SizeToContent.Height;
         ResizeMode = ResizeMode.NoResize; ShowInTaskbar = false; WindowStartupLocation = WindowStartupLocation.CenterOwner;
         var panel = new StackPanel { Margin = new(12) };
         var mode = new ComboBox { ItemsSource = new[] { "Screen positions", "Relative to a window" }, SelectedIndex = (int)current.CoordinateMode };

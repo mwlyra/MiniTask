@@ -53,6 +53,14 @@ An earlier exploratory run, before the stricter harness focus guard, failed its 
 | Single-instance collision, tray restoration, unsaved prompts and shutdown during recording | Implemented; final manual acceptance not executed |
 | Windows 10 x64 and older supported Windows 11 builds | Not available here |
 
+## Version 1.1.1 follow-up
+
+The 1.1.1 Release build passed without warnings or errors. All 21 core regression checks passed again; maximum observed cancellation was 0.841 ms across 20 real-clock trials. The WPF suite additionally checked the standard-key shortcut menus, duplicate assignment prevention, F1–F3 validation, F12 rejection, preservation of existing extended-key settings, all nine embedded icon sizes, transparent icon corners and use of MiniTask's own icon in the tray. Light/dark icon size previews were inspected. Logs: `core-tests-v1.1.1.txt` and `ui-tests-v1.1.1.txt` under `test-logs/`.
+
+The self-contained 1.1.1 executable also launched and closed normally in input-test mode. Its executable icon was extracted and confirmed to contain the new red mark. The user's main recorder was not closed or used for these checks. See `portable-smoke-v1.1.1.txt` in `test-logs/`.
+
+These tests do not replace the unexecuted physical acceptance checks above.
+
 ## Rerun
 
 From the source folder, with a .NET 10 SDK:

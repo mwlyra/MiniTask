@@ -11,8 +11,10 @@ public sealed record Hotkeys(int Record = 0x77, int Play = 0x78, int Emergency =
     public void Validate()
     {
         int[] keys = [Record, Play, Emergency];
-        if (keys.Distinct().Count() != 3 || keys.Any(k => k is < 0x75 or > 0x87))
-            throw new InvalidDataException("Choose three different function keys from F6 to F24.");
+        // Keep extended keys valid for saved profiles and isolated desktop tests.
+        // The user-facing menu offers standard keyboard keys only.
+        if (keys.Distinct().Count() != 3 || keys.Any(k => k is < 0x70 or > 0x87))
+            throw new InvalidDataException("Choose three different function keys under Prefs → Hotkeys.");
     }
 }
 public sealed class InputService : IDisposable
@@ -53,6 +55,8 @@ public sealed class InputService : IDisposable
     public Task Configure(Hotkeys keys) => Invoke(() =>
     {
         keys.Validate();
+        if (new[] { keys.Record, keys.Play, keys.Emergency }.Contains(0x7B))
+            throw new InvalidDataException("Windows reserves F12 for debugging. Choose another key under Prefs → Hotkeys.");
         Hotkeys previous = hotkeys;
         for (int i = 1; i <= 3; i++) Native.UnregisterHotKey(0, i);
         try { Register(keys); hotkeys = keys; }

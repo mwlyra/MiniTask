@@ -16,6 +16,7 @@ public sealed partial class MainWindow : Window
     private readonly TextBlock detail = new() { FontSize = 10, VerticalAlignment = VerticalAlignment.Center, Margin = new(8, 0, 0, 0) };
     private readonly DispatcherTimer timer;
     private readonly System.Windows.Forms.NotifyIcon tray;
+    private readonly System.Drawing.Icon trayIcon;
     private bool dirty, closing, finished, dialogOpen;
     private string? filename;
     private string? warning;
@@ -29,7 +30,7 @@ public sealed partial class MainWindow : Window
         Title = "MiniTask"; Width = 284; SizeToContent = SizeToContent.Height;
         ResizeMode = ResizeMode.CanMinimize; WindowStartupLocation = WindowStartupLocation.CenterScreen;
         Topmost = settings.AlwaysOnTop;
-        Icon = System.Windows.Media.Imaging.BitmapFrame.Create(new Uri("pack://application:,,,/MiniTask;component/MiniTask.ico"));
+        Icon = BrandIcon.Window;
         var root = new StackPanel { Margin = new(4, 3, 4, 3), UseLayoutRounding = true };
         var toolbar = new System.Windows.Controls.Primitives.UniformGrid { Columns = 5 };
         open = Tool("Open", "Open a recording (Ctrl+O)\nRight-click for recent files", async () => await Open());
@@ -52,7 +53,8 @@ public sealed partial class MainWindow : Window
             if (System.Windows.Input.Keyboard.Modifiers == System.Windows.Input.ModifierKeys.Control && e.Key == System.Windows.Input.Key.O) { e.Handled = true; await Open(); }
             else if (System.Windows.Input.Keyboard.Modifiers == System.Windows.Input.ModifierKeys.Control && e.Key == System.Windows.Input.Key.S) { e.Handled = true; await Save(); }
         };
-        tray = new System.Windows.Forms.NotifyIcon { Text = "MiniTask · Ready", Icon = System.Drawing.Icon.ExtractAssociatedIcon(Environment.ProcessPath!), Visible = true };
+        trayIcon = BrandIcon.CreateTrayIcon();
+        tray = new System.Windows.Forms.NotifyIcon { Text = "MiniTask · Ready", Icon = trayIcon, Visible = true };
         tray.DoubleClick += (_, _) => Dispatcher.BeginInvoke(Restore);
         var menu = new System.Windows.Forms.ContextMenuStrip();
         menu.Items.Add("Show MiniTask", null, (_, _) => Dispatcher.BeginInvoke(Restore));
@@ -327,6 +329,6 @@ public sealed partial class MainWindow : Window
         await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.Background);
         if (!await MayDiscard()) { closing = false; return; }
         timer.Stop(); SystemEvents.UserPreferenceChanged -= PreferenceChanged;
-        await controller.DisposeAsync(); tray.Dispose(); finished = true; Close();
+        await controller.DisposeAsync(); tray.Dispose(); trayIcon.Dispose(); finished = true; Close();
     }
 }

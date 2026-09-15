@@ -11,6 +11,8 @@
 
 The reserved control keys are excluded on both press and release and are not delivered to target applications. They remain reserved with modifiers held. If your target uses F8/F9/F10, choose different function keys under **Prefs → Hotkeys**. Registration failures are shown visibly; resolve them before relying on global shortcuts.
 
+The shortcut menu offers **F1–F11**. **F12** is visibly disabled because Windows reserves it for debugging. A key already assigned to another MiniTask action is labeled and disabled; change that action first if you want to reuse it. Defaults remain F8 (record), F9 (play), and F10 (emergency stop). Windows also recognizes F13–F24 for specialist keyboards, but MiniTask no longer lists these uncommon keys. Existing assignments to them remain active until you choose a replacement. On some laptops you may need Fn with a function key.
+
 Screen-position playback attempts to activate the most recently active external window once. If Windows refuses, MiniTask explains the problem. Activate the target yourself and use the global shortcut. The app does not repeatedly force foreground focus.
 
 ## Save, reopen and clear

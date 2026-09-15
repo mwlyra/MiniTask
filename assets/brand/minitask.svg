@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="MiniTask">
+  <title>MiniTask — record, replay, repeat</title>
+  <path fill="#B63D32" d="M16,2 H48 A14,14 0 0 1 62,16 V48 A14,14 0 0 1 48,62 H16 A14,14 0 0 1 2,48 V16 A14,14 0 0 1 16,2 Z"/>
+  <path fill="none" stroke="#FFF6E6" stroke-width="6" stroke-linecap="round" d="M49,35 A17,17 0 1 1 41,18"/>
+  <path fill="#FFF6E6" d="M49,12 V26 H35 Z"/>
+  <path fill="#FFF6E6" d="M27,24 L40,32 27,40 Z"/>
+</svg>
