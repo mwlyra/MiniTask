@@ -6,13 +6,14 @@ A small Windows app that records your mouse and keyboard actions so you can play
 
 ## Download and setup
 
-1. [Download MiniTask for Windows](https://github.com/mwlyra/MiniTask/releases/download/v1.1.3/MiniTask-1.1.3-win-x64.zip).
-2. Right-click the ZIP file and choose **Extract All**.
-3. Open the extracted folder and run **MiniTask.exe**.
+1. [Download MiniTask.exe](https://github.com/mwlyra/MiniTask/releases/download/v1.1.4/MiniTask.exe).
+2. Put it wherever you want to keep it and open it.
 
 Requires **Windows 11, 64-bit**. There is no installer, account, or separate .NET download. MiniTask runs locally and works offline.
 
-Updating? Close the old copy first, including its tray icon, then extract the new download. Your saved recordings and preferences carry over.
+MiniTask is currently in **public beta**. Report problems on the [issue tracker](https://github.com/mwlyra/MiniTask/issues).
+
+Updating? Close the old copy first, including its tray icon, then replace it with the new executable. Your saved recordings and preferences carry over.
 
 ## Make your first recording
 
@@ -71,3 +72,7 @@ dotnet publish src/MiniTask.Desktop -c Release -r win-x64 --self-contained true 
 ```
 
 Developer documentation: [architecture](docs/ARCHITECTURE.md), [file format](docs/MACRO-FORMAT.md), [testing](docs/TESTING.md), and [packaging](docs/PACKAGING.md).
+
+## License
+
+MiniTask is open source under the [MIT license](LICENSE). Bundled runtime components have their own notices, available under **Prefs → Tools → Licenses** and in [docs/runtime-licenses](docs/runtime-licenses).

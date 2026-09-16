@@ -32,4 +32,6 @@ Environment checks run between input events and during waits. Expensive window i
 
 The test programs intentionally use only the .NET SDK/BCL, avoiding a test-framework dependency for offline portability. `build.ps1` runs them explicitly; `dotnet test` is not the test entry point. Core tests use a controllable clock/sink. Windows tests separate supplied hook payload tests from actual native injection. The UI suite instantiates WPF controls and writes render artifacts; pixel scaling in that suite does not replace physical mixed-DPI monitor testing.
 
-Windows Forms supplies only `NotifyIcon` and its menu. The WPF application manifest owns DPI configuration; WFO0003 is suppressed for this documented hybrid case. WPF trimming is disabled. The executable bundles .NET and WindowsDesktop; native library extraction may create runtime cache files under the user's temporary `.net` folder. Settings remain in LocalAppData.
+The tray uses `Shell_NotifyIconW` and a native popup menu, without a Windows Forms dependency. An invisible top-level window receives tray callbacks and recreates the icon after Explorer restarts. Minimizing hides the toolbar only when its tray icon is available. The WPF application manifest owns DPI configuration.
+
+WPF trimming is disabled. The executable bundles compressed .NET and WPF runtime files with English resources; native library extraction may create runtime cache files under the user's temporary `.net` folder. Runtime license notices are embedded and displayed from the Tools menu. Settings remain in LocalAppData.

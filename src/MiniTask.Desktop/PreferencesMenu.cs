@@ -84,7 +84,8 @@ public sealed partial class MainWindow
             try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(Environment.ProcessPath!) { UseShellExecute = true, Arguments = "--input-test" }); }
             catch (Exception ex) { Error(ex); }
         }));
-        tools.Items.Add(Item("Restart as administrator…", async () => await RestartElevated())); menu.Items.Add(tools);
+        tools.Items.Add(Item("Restart as administrator…", async () => await RestartElevated()));
+        tools.Items.Add(Item("Licenses", ShowLicenses)); menu.Items.Add(tools);
         menu.Items.Add(Item("Help", () => MessageBox.Show(this, SettingsWindow.Guide, "MiniTask · Quick help", MessageBoxButton.OK, MessageBoxImage.Information)));
         return menu;
     }

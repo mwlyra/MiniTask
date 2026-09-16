@@ -16,7 +16,7 @@ public sealed partial class MainWindow : Window
     private readonly TextBlock status = new() { FontSize = 11, TextTrimming = TextTrimming.CharacterEllipsis, VerticalAlignment = VerticalAlignment.Center };
     private readonly TextBlock detail = new() { FontSize = 10, VerticalAlignment = VerticalAlignment.Center, Margin = new(8, 0, 0, 0) };
     private readonly DispatcherTimer timer;
-    private readonly System.Windows.Forms.NotifyIcon tray;
+    private readonly TrayIcon tray;
     private readonly System.Drawing.Icon trayIcon;
     private bool dirty, closing, finished, dialogOpen;
     private string? filename;
@@ -56,15 +56,10 @@ public sealed partial class MainWindow : Window
             else if (System.Windows.Input.Keyboard.Modifiers == System.Windows.Input.ModifierKeys.Control && e.Key == System.Windows.Input.Key.S) { e.Handled = true; await Save(); }
         };
         trayIcon = BrandIcon.CreateTrayIcon();
-        tray = new System.Windows.Forms.NotifyIcon { Text = "MiniTask · Ready", Icon = trayIcon, Visible = true };
-        tray.DoubleClick += (_, _) => Dispatcher.BeginInvoke(Restore);
-        var menu = new System.Windows.Forms.ContextMenuStrip();
-        menu.Items.Add("Show MiniTask", null, (_, _) => Dispatcher.BeginInvoke(Restore));
-        menu.Items.Add("Emergency stop", null, (_, _) => controller.Stop());
-        menu.Items.Add("Exit", null, (_, _) => Dispatcher.BeginInvoke(Close)); tray.ContextMenuStrip = menu;
+        tray = new TrayIcon(trayIcon, () => Dispatcher.BeginInvoke(Restore), () => controller.Stop(), () => Dispatcher.BeginInvoke(Close));
         StateChanged += (_, _) =>
         {
-            if (WindowState == WindowState.Minimized && settings.TrayOnMinimize && controller.Gate.State != RunState.Recording) Hide();
+            if (WindowState == WindowState.Minimized && settings.TrayOnMinimize && tray.Added && controller.Gate.State != RunState.Recording) Hide();
         };
         controller.RecordRequested += () => Dispatcher.BeginInvoke(ToggleRecord);
         controller.PlayRequested += () => Dispatcher.BeginInvoke(TogglePlay);

@@ -31,6 +31,14 @@ To check a packaged build:
 
 The `-InputTest` option checks startup and shutdown through the separate input-test window.
 
+To measure launch time, close MiniTask and run:
+
+```powershell
+./tests/Measure-Startup.ps1 -Executable ./artifacts/MiniTask.exe
+```
+
+This measures time until the toolbar responds, then closes each test instance normally. The first run uses a fresh runtime extraction directory; later runs reuse it. It does not clear Windows caches or measure the exact first painted frame, so results are not equivalent to a cold boot.
+
 ## Manual checks
 
 Before a release, record and replay typing, clicks, scrolling, and dragging in ordinary desktop apps. Check repeated playback, stopping during a long pause, stopping while an input is held, saving and reopening a recording, and restoring the tray window. Test different display scaling and monitor arrangements separately.

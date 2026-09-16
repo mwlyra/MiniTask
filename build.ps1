@@ -1,4 +1,4 @@
-param([switch]$Publish, [switch]$WindowsChecks, [string]$DotNet = 'dotnet')
+param([switch]$Publish, [switch]$SourceArchive, [switch]$WindowsChecks, [string]$DotNet = 'dotnet')
 $ErrorActionPreference = 'Stop'
 $env:DOTNET_CLI_TELEMETRY_OPTOUT = '1'
 Push-Location $PSScriptRoot
@@ -19,20 +19,22 @@ try {
     if ($Publish) {
         & $DotNet publish src/MiniTask.Desktop -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true --configfile NuGet.Config -o artifacts/portable
         if ($LASTEXITCODE) { throw 'Publish failed.' }
-        Compress-Archive -Path artifacts/portable/MiniTask.exe, README.md, docs -DestinationPath artifacts/MiniTask-win-x64.zip -Force
-        Add-Type -AssemblyName System.IO.Compression.FileSystem
-        $sourceZipPath = Join-Path $PSScriptRoot 'artifacts/MiniTask-source.zip'
-        $sourceStream = [System.IO.File]::Open($sourceZipPath, [System.IO.FileMode]::Create)
-        $sourceArchive = [System.IO.Compression.ZipArchive]::new($sourceStream, [System.IO.Compression.ZipArchiveMode]::Create)
-        try {
-            $sourceFiles = Get-ChildItem -LiteralPath $PSScriptRoot -Recurse -File | Where-Object { $_.FullName -notmatch '\\(bin|obj|artifacts|\.git|\.vs)\\' }
-            foreach ($sourceFile in $sourceFiles) {
-                $entryName = 'MiniTask/' + $sourceFile.FullName.Substring($PSScriptRoot.Length + 1).Replace('\', '/')
-                [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($sourceArchive, $sourceFile.FullName, $entryName, [System.IO.Compression.CompressionLevel]::Optimal) | Out-Null
+        Copy-Item -LiteralPath artifacts/portable/MiniTask.exe -Destination artifacts/MiniTask.exe -Force
+        if ($SourceArchive) {
+            Add-Type -AssemblyName System.IO.Compression.FileSystem
+            $sourceZipPath = Join-Path $PSScriptRoot 'artifacts/MiniTask-source.zip'
+            $sourceStream = [System.IO.File]::Open($sourceZipPath, [System.IO.FileMode]::Create)
+            $zipArchive = [System.IO.Compression.ZipArchive]::new($sourceStream, [System.IO.Compression.ZipArchiveMode]::Create)
+            try {
+                $sourceFiles = Get-ChildItem -LiteralPath $PSScriptRoot -Recurse -File | Where-Object { $_.FullName -notmatch '\\(bin|obj|artifacts|\.git|\.vs)\\' }
+                foreach ($sourceFile in $sourceFiles) {
+                    $entryName = 'MiniTask/' + $sourceFile.FullName.Substring($PSScriptRoot.Length + 1).Replace('\', '/')
+                    [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zipArchive, $sourceFile.FullName, $entryName, [System.IO.Compression.CompressionLevel]::Optimal) | Out-Null
+                }
             }
+            finally { $zipArchive.Dispose(); $sourceStream.Dispose() }
         }
-        finally { $sourceArchive.Dispose(); $sourceStream.Dispose() }
-        Get-FileHash -Algorithm SHA256 artifacts/portable/MiniTask.exe, artifacts/MiniTask-win-x64.zip | Format-Table
+        Get-FileHash -Algorithm SHA256 artifacts/MiniTask.exe | Format-Table
     }
 }
 finally { Pop-Location }

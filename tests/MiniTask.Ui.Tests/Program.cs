@@ -66,6 +66,18 @@ internal static class Program
                 try { controller.Input.Configure(new(0x7B, 0x86, 0x87)).GetAwaiter().GetResult(); throw new Exception("Reserved F12 was accepted."); }
                 catch (InvalidDataException) { }
                 VerifyIcon(window, root);
+                var licenseType = typeof(MainWindow).Assembly.GetType("MiniTask.Desktop.LicenseWindow")!;
+                var licenses = (Window)Activator.CreateInstance(licenseType)!;
+                licenses.Owner = window; licenses.Show(); licenses.UpdateLayout();
+                var noticeText = ((DockPanel)licenses.Content).Children.OfType<TextBox>().Single();
+                if (!noticeText.IsReadOnly || !noticeText.Text.Contains("Copyright (c) 2026 Maurício (mwlyra)") || !noticeText.Text.Contains("MIT License") || !noticeText.Text.Contains(".NET Runtime uses third-party libraries"))
+                    throw new Exception("The standalone app must include readable runtime license notices.");
+                Render(licenses, Path.Combine(output, "licenses.png"), 1); licenses.Close();
+                var nativeTray = typeof(MainWindow).GetField("tray", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(window)!;
+                var trayCommand = nativeTray.GetType().GetMethod("ExecuteCommand", BindingFlags.NonPublic | BindingFlags.Instance)!;
+                window.Hide(); trayCommand.Invoke(nativeTray, new object[] { 1 });
+                await Dispatcher.Yield(DispatcherPriority.Background);
+                if (!window.IsVisible) throw new Exception("The tray Show action did not restore the toolbar.");
                 var soundMenu = commands.Items.OfType<MenuItem>().Single(m => (string)m.Header == "Sound cues");
                 soundMenu.RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
                 if (savedPreferences?.SoundCues != true || !sounds.SequenceEqual(new[] { true })) throw new Exception("Enabling sound cues must persist and preview the start cue.");
@@ -79,7 +91,7 @@ internal static class Program
                 settingsField.SetValue(window, new Settings { Hotkeys = new(0x85, 0x86, 0x87), PrivacyAccepted = true, SoundCues = true });
                 ((Button)toolbar.Children[2]).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
                 if (controller.Gate.State != MiniTask.Core.RunState.Recording) throw new Exception("An unsaved macro must not block starting another recording.");
-                controller.Stop(); await controller.WaitForStop(); await Dispatcher.Yield(DispatcherPriority.Background);
+                trayCommand.Invoke(nativeTray, new object[] { 2 }); await controller.WaitForStop(); await Dispatcher.Yield(DispatcherPriority.Background);
                 if (!sounds.SequenceEqual(new[] { true, false })) throw new Exception("Recording must emit one start cue and one completion cue.");
                 if (ReferenceEquals(controller.Macro, previous) || filenameField.GetValue(window) is not null || !(bool)dirtyField.GetValue(window)!)
                     throw new Exception("A fresh recording must replace the old one without reusing its saved filename.");
@@ -140,6 +152,15 @@ internal static class Program
                 var input = new InputTestWindow(); input.Show(); input.UpdateLayout(); Render(input, Path.Combine(output, "input-test-dark.png"), 1); input.Close();
                 Console.WriteLine("PASS compact toolbar; speed/repeat/caption menu actions and persistence; advanced dialog; recording/playback Stop states; light/dark rendering at 100%, 150%, 200%.");
                 Console.WriteLine("UI images: " + output);
+                bool exitRequested = false;
+                var trayType = nativeTray.GetType();
+                var testTray = Activator.CreateInstance(trayType, trayType.GetProperty("Icon")!.GetValue(nativeTray),
+                    (Action)(() => { }), (Action)(() => { }), (Action)(() => exitRequested = true))!;
+                try { trayCommand.Invoke(testTray, new object[] { 3 }); }
+                finally { ((IDisposable)testTray).Dispose(); }
+                if (!exitRequested || (bool)trayType.GetProperty("Added")!.GetValue(testTray)!)
+                    throw new Exception("Tray Exit callback or icon cleanup failed.");
+                Console.WriteLine("PASS native tray restore, emergency stop, exit callback and cleanup; embedded license viewer.");
             }
             catch (Exception ex) { failed++; Console.WriteLine("FAIL UI: " + ex); }
             finally { window.Close(); }
@@ -152,10 +173,12 @@ internal static class Program
         int[] expected = [16, 20, 24, 32, 40, 48, 64, 128, 256];
         if (!decoder.Frames.Select(f => f.PixelWidth).SequenceEqual(expected) || window.Icon is null)
             throw new Exception("Missing Windows icon sizes or title-bar icon.");
-        var tray = (System.Windows.Forms.NotifyIcon)typeof(MainWindow).GetField("tray", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(window)!;
-        if (tray.Icon is null) throw new Exception("Tray branding is missing.");
-        using (var trayBitmap = tray.Icon.ToBitmap())
-        using (var expectedIcon = new System.Drawing.Icon(Path.Combine(root, "src", "MiniTask.Desktop", "MiniTask.ico"), tray.Icon.Size))
+        var tray = typeof(MainWindow).GetField("tray", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(window)!;
+        var icon = (System.Drawing.Icon)tray.GetType().GetProperty("Icon")!.GetValue(tray)!;
+        if (!(bool)tray.GetType().GetProperty("Added")!.GetValue(tray)!) throw new Exception("Native tray icon was not added.");
+        if (System.Runtime.InteropServices.Marshal.SizeOf(tray.GetType().GetNestedType("NotifyIconData", BindingFlags.NonPublic)!) != 976) throw new Exception("Incorrect x64 tray structure layout.");
+        using (var trayBitmap = icon.ToBitmap())
+        using (var expectedIcon = new System.Drawing.Icon(Path.Combine(root, "src", "MiniTask.Desktop", "MiniTask.ico"), icon.Size))
         using (var expectedBitmap = expectedIcon.ToBitmap())
         {
             for (int y = 0; y < trayBitmap.Height; y++)

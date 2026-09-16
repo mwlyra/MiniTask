@@ -9,7 +9,8 @@ internal static class BrandIcon
     public static System.Drawing.Icon CreateTrayIcon()
     {
         using var stream = Application.GetResourceStream(Resource).Stream;
-        using var icon = new System.Drawing.Icon(stream, System.Windows.Forms.SystemInformation.SmallIconSize);
+        using var icon = new System.Drawing.Icon(stream, new System.Drawing.Size(GetSystemMetrics(49), GetSystemMetrics(50)));
         return (System.Drawing.Icon)icon.Clone();
     }
+    [System.Runtime.InteropServices.DllImport("user32.dll")] private static extern int GetSystemMetrics(int index);
 }
